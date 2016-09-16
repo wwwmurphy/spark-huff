@@ -4,7 +4,7 @@ import requests
 
 def routetime_mq(lng1, lat1, lng2, lat2):
 
-    key = '4hmYZIGuAZG0rjoysi4GG3tRKAlCsxGL'
+    key = '--------------------------------'
     duratn = -1
     coords = "origins=%s,%s&destinations=%s,%s" % (lat1, lng1, lat2, lng2)
     payload = {'key': key, 'from': '%s,%s'%(lat1,lng1), 'to': '%s,%s'%(lat2,lng2)}
