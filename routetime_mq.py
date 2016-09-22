@@ -2,32 +2,39 @@
 
 import requests
 
-def routetime_mq(lng1, lat1, lng2, lat2):
+def routetime_mq(lng1, lat1, lng2, lat2, key):
 
-    key = '--------------------------------'
-    duratn = -1
     coords = "origins=%s,%s&destinations=%s,%s" % (lat1, lng1, lat2, lng2)
     payload = {'key': key, 'from': '%s,%s'%(lat1,lng1), 'to': '%s,%s'%(lat2,lng2)}
     r = requests.get("http://www.mapquestapi.com/directions/v2/route", params=payload)
+    r.raise_for_status()
     res = r.json()
-    if r.status_code != requests.codes.ok:
-      print "Stopping due to error response: %d" % (r.status_code)
     if res['info']['statuscode'] == 0:
       duratn = res['route']['time']
+    else:
+      duratn = -1
 
     return duratn
 
 
 if __name__ == "__main__":
+    """   For Testing   """
+    import geocode_mq as geomq
+    import os
+    mykey = os.getenv('MAPQUEST_KEY', 'None')
 
-  print "Driving time between: \n" +\
-        "333 Ravenswood Ave, Menlo Park, Ca. (37.4576055, -122.1766376)\n" +\
-        "1095 University Dr, Menlo Park, Ca. (37.449431, -122.186366)"
+    address1 = "1600 Pennsylvania Ave NW, Washington, DC 20500"
+    address2 = "100 S Independence Mall W, Philadelphia, PA 19106"
+    try:
+        addr1_ll = geomq.geocode_mq( address1, mykey )
+        addr2_ll = geomq.geocode_mq( address2, mykey )
 
-  lat1 = "37.4576055"
-  lng1 = "-122.1766376"
-  lat2 = "37.449431"
-  lng2 = "-122.186366"
+        print "Driving time between: "
+        print address1 + ": ", addr1_ll
+        print address2 + ": ", addr2_ll
 
-  print "Travel time (secs): ", routetime_mq( lng1, lat1, lng2, lat2 )
-
+        print "Travel time (secs): ", routetime_mq( addr1_ll[0], addr1_ll[1], addr2_ll[0], addr2_ll[1], mykey )
+    except StopIteration as errmsg:
+        print errmsg
+    except RuntimeWarning as errmsg:
+        print errmsg
